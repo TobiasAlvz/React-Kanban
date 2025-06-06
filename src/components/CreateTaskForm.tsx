@@ -1,17 +1,6 @@
-import { FormEventHandler } from "react";
+import { type FormEventHandler, useContext } from "react";
+import { TasksContext } from "../contexts/TaskContext";
 import { z } from "zod";
-import {
-  Badge,
-  Box,
-  Button,
-  Dialog,
-  Flex,
-  RadioGroup,
-  Text,
-  TextArea,
-  TextField,
-} from "@radix-ui/themes";
-import { PlusIcon } from "@radix-ui/react-icons";
 
 const CreateTaskSchema = z.object({
   title: z.string(),
@@ -21,6 +10,8 @@ const CreateTaskSchema = z.object({
 });
 
 export const CreateTaskForm: React.FC = () => {
+  const { createTask } = useContext(TasksContext);
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (ev) => {
     ev.preventDefault();
 
@@ -37,101 +28,119 @@ export const CreateTaskForm: React.FC = () => {
       status,
       priority,
     });
-    alert(JSON.stringify(taskData));
+    await createTask(taskData);
   };
 
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
-        <Button>
-          <PlusIcon /> Nova Tarefa
-        </Button>
-      </Dialog.Trigger>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <label htmlFor="title">Título</label>
+        <input
+          className="form-control"
+          type="text"
+          name="title"
+          id="title"
+          autoFocus
+        />
+      </div>
 
-      <Dialog.Content maxWidth="32rem">
-        <Dialog.Title>Nova Tarefa</Dialog.Title>
-        <Dialog.Description size="2" mb="4">
-          Adicione novas tarefas ao quadro.
-        </Dialog.Description>
+      <div className="mb-3">
+        <label htmlFor="description">Descrição</label>
+        <textarea
+          className="form-control"
+          name="description"
+          id="description"
+        ></textarea>
+      </div>
 
-        <form onSubmit={handleSubmit}>
-          <Flex direction="column" gap="4">
-            <Box maxWidth="32rem">
-              <Box mb="2">
-                <Text as="label" htmlFor="title">
-                  Título
-                </Text>
-              </Box>
-              <TextField.Root
-                placeholder="Defina um título"
-                name="title"
-                id="title"
-                autoFocus
-                required
-              />
-            </Box>
+      <div className="mb-3">
+        <div>Status</div>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="status"
+            id="todo"
+            value="todo"
+          />
+          <label className="form-check-label" htmlFor="todo">
+            Para Fazer
+          </label>
+        </div>
 
-            <Box maxWidth="32rem">
-              <Box mb="2">
-                <Text as="label" htmlFor="description">
-                  Descrição
-                </Text>
-              </Box>
-              <TextArea
-                placeholder="Descreva a tarefa"
-                name="description"
-                id="description"
-                required
-              />
-            </Box>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="status"
+            id="doing"
+            value="doing"
+          />
+          <label className="form-check-label" htmlFor="doing">
+            Em Progresso
+          </label>
+        </div>
 
-            <Flex gap="8">
-              <Box>
-                <Text as="div" mb="2">
-                  Situação
-                </Text>
-                <RadioGroup.Root name="status" defaultValue="todo">
-                  <RadioGroup.Item value="todo">
-                    <Badge color="gray">Para Fazer</Badge>
-                  </RadioGroup.Item>
-                  <RadioGroup.Item value="doing">
-                    <Badge color="yellow">Em Progresso</Badge>
-                  </RadioGroup.Item>
-                  <RadioGroup.Item value="done">
-                    <Badge color="green">Concluído</Badge>
-                  </RadioGroup.Item>
-                </RadioGroup.Root>
-              </Box>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="status"
+            id="done"
+            value="done"
+          />
+          <label className="form-check-label" htmlFor="done">
+            Completada
+          </label>
+        </div>
+      </div>
 
-              <Box>
-                <Text as="div" mb="2">
-                  Prioridade
-                </Text>
-                <RadioGroup.Root name="priority" defaultValue="low">
-                  <RadioGroup.Item value="low">
-                    <Badge color="sky">Baixa</Badge>
-                  </RadioGroup.Item>
-                  <RadioGroup.Item value="medium">
-                    <Badge color="amber">Média</Badge>
-                  </RadioGroup.Item>
-                  <RadioGroup.Item value="high">
-                    <Badge color="tomato">Alta</Badge>
-                  </RadioGroup.Item>
-                </RadioGroup.Root>
-              </Box>
-            </Flex>
+      <div className="mb-3">
+        <div>Prioridade</div>
 
-            <Flex gap="2" justify="end">
-              <Dialog.Close>
-                <Button color="gray" variant="soft">
-                  Cancelar
-                </Button>
-              </Dialog.Close>
-              <Button type="submit">Criar Tarefa</Button>
-            </Flex>
-          </Flex>
-        </form>
-      </Dialog.Content>
-    </Dialog.Root>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="priority"
+            id="low"
+            value="low"
+          />
+          <label className="form-check-label" htmlFor="low">
+            Baixa
+          </label>
+        </div>
+
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="priority"
+            id="medium"
+            value="medium"
+          />
+          <label className="form-check-label" htmlFor="medium">
+            Média
+          </label>
+        </div>
+
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="radio"
+            name="priority"
+            id="high"
+            value="high"
+          />
+          <label className="form-check-label" htmlFor="high">
+            Alta
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" className="btn btn-primary">
+        Criar Tarefa
+      </button>
+    </form>
   );
 };
